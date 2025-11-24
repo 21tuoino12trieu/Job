@@ -91,6 +91,8 @@ def main():
     data = st.session_state.get("label_results", [])
 
     if data:
+        total = len(data)
+        st.info(f"Trạng thái: Đã xử lý {total}/{total} ảnh.")
         data.sort(key=lambda x: x.get('filename', ''))
         for entry in data:
             display_entry(entry)
