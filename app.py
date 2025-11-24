@@ -63,8 +63,22 @@ def display_entry(entry):
 
     st.markdown("---") # Separator for the next row
 
-def render_table(data):
-    """Vẽ bảng kết quả (tiêu đề + từng dòng)."""
+def main():
+    st.set_page_config(layout="wide")
+    # Centered main title
+    st.markdown("<h1 style='text-align: center;'>Bảng thông tin chi tiết xe</h1>", unsafe_allow_html=True)
+
+    if st.button("Chạy gán nhãn"):
+        with st.spinner("Đang chạy gán nhãn bằng Gemini..."):
+            try:
+                # Gọi trực tiếp logic gán nhãn, trả về list kết quả
+                results = labeler.run_labeling()
+                st.session_state["label_results"] = results
+                st.success("Hoàn tất! Đã cập nhật lại kết quả gán nhãn trong phiên hiện tại.")
+                st.rerun()
+            except Exception as e:
+                st.error(f"Lỗi khi chạy gán nhãn: {e}")
+
     # Create and center table headers
     header_col1, header_col2 = st.columns([1, 2])
     with header_col1:
@@ -73,45 +87,15 @@ def render_table(data):
         st.markdown("<h2 style='text-align: center;'>Thông tin chi tiết</h2>", unsafe_allow_html=True)
     st.markdown("---")
 
+    # Lấy dữ liệu từ session_state (đã được cập nhật sau khi bấm nút)
+    data = st.session_state.get("label_results", [])
+
     if data:
-        data = sorted(data, key=lambda x: x.get('filename', ''))
+        data.sort(key=lambda x: x.get('filename', ''))
         for entry in data:
             display_entry(entry)
     else:
         st.info("Không có dữ liệu để hiển thị. Hãy bấm nút 'Chạy gán nhãn' để tạo kết quả mới.")
-
-def main():
-    st.set_page_config(layout="wide")
-    # Centered main title
-    st.markdown("<h1 style='text-align: center;'>Bảng thông tin chi tiết xe</h1>", unsafe_allow_html=True)
-
-    # Placeholder cho phần bảng kết quả để có thể cập nhật dần
-    table_placeholder = st.empty()
-
-    # Hiển thị kết quả hiện có (nếu đã chạy trước đó)
-    current_data = st.session_state.get("label_results", [])
-    with table_placeholder:
-        render_table(current_data)
-
-    if st.button("Chạy gán nhãn"):
-        progress = st.progress(0.0)
-        status_text = st.empty()
-        results = []
-        try:
-            for result, idx, total in labeler.iter_labeling():
-                results.append(result)
-                st.session_state["label_results"] = results
-                # Cập nhật bảng sau mỗi ảnh
-                with table_placeholder:
-                    render_table(results)
-                # Cập nhật tiến độ + trạng thái
-                if total > 0:
-                    progress.progress(idx / total)
-                status_text.text(f"Đang xử lý ảnh {idx}/{total}...")
-            status_text.text("Hoàn tất gán nhãn.")
-            st.success("Hoàn tất! Đã cập nhật lại kết quả gán nhãn trong phiên hiện tại.")
-        except Exception as e:
-            st.error(f"Lỗi khi chạy gán nhãn: {e}")
 
 if __name__ == "__main__":
     main()

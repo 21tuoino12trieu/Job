@@ -26,12 +26,13 @@ model = genai.GenerativeModel(
     system_instruction=PROMPT,
 )
 
-def iter_labeling():
+def run_labeling():
     """
-    Generator gán nhãn từng ảnh.
-    Yield từng phần tử dạng (result, index, total).
+    Chạy gán nhãn tất cả ảnh trong IMAGE_FOLDER.
+    Trả về danh sách kết quả sau khi xử lý xong.
     """
     pdf_file = None
+    results = []
     try:
         # --- Luôn upload lại file PDF từ đầu (bắt buộc) ---
         print("Bắt đầu upload file hướng dẫn...")
@@ -51,10 +52,9 @@ def iter_labeling():
             f for f in os.listdir(IMAGE_FOLDER)
             if f.lower().endswith((".png", ".jpg", ".jpeg"))
         ]
-        total = len(image_files)
-        print(f"\nTìm thấy {total} ảnh. Bắt đầu xử lý...")
+        print(f"\nTìm thấy {len(image_files)} ảnh. Bắt đầu xử lý...")
 
-        for idx, img_name in enumerate(image_files, start=1):
+        for img_name in image_files:
             img_path = os.path.join(IMAGE_FOLDER, img_name)
             print(f"--> Đang xử lý: {img_name}")
             try:
@@ -63,15 +63,15 @@ def iter_labeling():
                 # Gửi thẳng đối tượng ảnh, không cần upload
                 response = model.generate_content([pdf_file, img])
                 data = json.loads(response.text)
-                result = {"filename": img_name, "labels": data}
+                results.append({"filename": img_name, "labels": data})
                 print(f"-->Hoàn tất: {img_name}")
                 time.sleep(10)  # Giữ nguyên độ trễ giữa các yêu cầu
             except Exception as e:
                 print(f"Lỗi khi xử lý ảnh {img_name}: {e}")
-                result = {"filename": img_name, "error": str(e)}
-            yield result, idx, total
+                results.append({"filename": img_name, "error": str(e)})
 
-        print("\nHoàn tất toàn bộ ảnh.")
+        print(f"\nHoàn tất! Đã trả về {len(results)} kết quả.")
+        return results
 
     finally:
         # --- Luôn dọn dẹp file PDF sau khi chạy ---
@@ -82,16 +82,6 @@ def iter_labeling():
                 print(f"   Đã xoá file PDF.")
             except Exception as e:
                 print(f"Lỗi khi xoá file PDF {pdf_file.name}: {e}")
-
-def run_labeling():
-    """
-    Thuận tiện khi muốn lấy full list kết quả một lần.
-    """
-    results = []
-    for result, _, _ in iter_labeling():
-        results.append(result)
-    print(f"\nTổng cộng {len(results)} kết quả.")
-    return results
 
 if __name__ == "__main__":
     run_labeling()

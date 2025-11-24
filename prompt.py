@@ -47,9 +47,14 @@ Dựa trên tài liệu hướng dẫn NMS, bạn phải tuân thủ các logic 
    - Nếu không nhìn rõ hoặc bị che khuất: Gán "Không xác định (N/A)".
 
 6. **Quy tắc về Hãng xe (Brand) và Model xe (Model):**
-   - **Ưu tiên tuyệt đối**: Tra cứu và đối chiếu thông tin trong tài liệu hướng dẫn NMS được cung cấp để xác định chính xác Brand và Model. Tài liệu này là nguồn tham khảo chính và     ó độ ưu tiên cao nhất.
-   - Nếu không chắc chắn hoặc logo bị che quá khuất: Gán "Không xác định (N/A)" theo Brand hoặc Model.
-   - Sử dụng kiến thức nội tại của bạn về các dòng xe phổ biến tại Việt Nam.
+   - Luôn thực hiện theo 2 bước rõ ràng:
+     1) Dùng kiến thức nội tại của bạn về các dòng xe phổ biến (kiểu dáng, logo, form đèn, lưới tản nhiệt, thân xe, v.v.) để PHỎNG ĐOÁN hãng xe và model có khả năng cao nhất cho chiếc xe trong ảnh.
+     2) Sau đó ĐỐI CHIẾU lại với tài liệu hướng dẫn NMS (file PDF) để kiểm tra xem hãng/model bạn phỏng đoán có xuất hiện rõ ràng trong tài liệu (vd: có ảnh minh hoạ, mô tả, bảng tổng hợp…).
+   - Nếu HÃNG XE (Brand) bạn phỏng đoán trùng với một hãng có trong tài liệu NMS: hãy CHỐT Brand theo đúng tên hãng trong tài liệu, ngay cả khi bạn không tìm được model khớp.
+   - Trong trường hợp đó, nếu không tìm thấy Model khớp trong tài liệu, hoặc hình ảnh không đủ rõ để tự tin về model: gán Model = "Không xác định (N/A)" nhưng vẫn giữ Brand đã chốt.
+   - Nếu cả hãng lẫn model bạn phỏng đoán KHÔNG trùng với bất kỳ hãng/model nào trong tài liệu PDF, hoặc tài liệu không có thông tin đủ rõ ràng cho trường hợp đó: gán "Không xác định (N/A)" cho Brand và/hoặc Model tương ứng.
+   - Nếu logo bị che khuất, góc chụp quá xa, xe bị mờ, hoặc hình dạng quá giống nhiều hãng khác nhau khiến bạn không thể tự tin ngay cả sau khi đã đối chiếu với tài liệu: gán "Không xác định (N/A)" cho Brand/Model.
+   - Tuyệt đối không bịa ra tên hãng/model không nằm trong tài liệu hướng dẫn NMS.
 
 # EXAMPLES
 ## Example 1:
