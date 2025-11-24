@@ -69,15 +69,19 @@ def main():
     st.markdown("<h1 style='text-align: center;'>Bảng thông tin chi tiết xe</h1>", unsafe_allow_html=True)
 
     if st.button("Chạy gán nhãn"):
-        with st.spinner("Đang chạy gán nhãn bằng Gemini..."):
-            try:
-                # Gọi trực tiếp logic gán nhãn, trả về list kết quả
-                results = labeler.run_labeling()
+        progress = st.progress(0.0, text="Đang xử lý 0 ảnh...")
+        status = st.empty()
+        results = []
+        try:
+            for result, idx, total in labeler.iter_labeling():
+                results.append(result)
                 st.session_state["label_results"] = results
-                st.success("Hoàn tất! Đã cập nhật lại kết quả gán nhãn trong phiên hiện tại.")
-                st.rerun()
-            except Exception as e:
-                st.error(f"Lỗi khi chạy gán nhãn: {e}")
+                if total > 0:
+                    progress.progress(idx / total, text=f"Đang xử lý {idx}/{total} ảnh...")
+            st.success("Hoàn tất! Đã cập nhật lại kết quả gán nhãn trong phiên hiện tại.")
+            st.rerun()
+        except Exception as e:
+            st.error(f"Lỗi khi chạy gán nhãn: {e}")
 
     # Create and center table headers
     header_col1, header_col2 = st.columns([1, 2])
@@ -91,8 +95,6 @@ def main():
     data = st.session_state.get("label_results", [])
 
     if data:
-        total = len(data)
-        st.info(f"Trạng thái: Đã xử lý {total}/{total} ảnh.")
         data.sort(key=lambda x: x.get('filename', ''))
         for entry in data:
             display_entry(entry)
