@@ -1,0 +1,10 @@
+# Môi trường ảo
+venv/
+.venv/
+
+# File tạm và cache
+__pycache__/
+*.pyc
+
+# File chứa biến môi trường local
+.env
