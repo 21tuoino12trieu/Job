@@ -8,7 +8,7 @@ load_dotenv()
 API_KEY = os.getenv("GEMINI_API_KEY")
 IMAGE_FOLDER = "Ảnh"
 PDF_PATH = "Thống_nhất_gán_nhãn_phương_tiện_NMS.pptx.pdf"
-MODEL_NAME = "gemini-2.5-pro"
+MODEL_NAME = "gemini-2.5-flash"
 
 if not API_KEY:
     raise RuntimeError("Chưa có GEMINI_API_KEY trong .env")
@@ -60,7 +60,7 @@ def iter_labeling():
                 data = json.loads(response.text)
                 result = {"filename": img_name, "labels": data}
                 print(f"-->Hoàn tất: {img_name}")
-                time.sleep(60)
+                time.sleep(10)
             except Exception as e:
                 print(f"Lỗi khi xử lý ảnh {img_name}: {e}")
                 result = {"filename": img_name, "error": str(e)}
