@@ -21,8 +21,12 @@ Dựa trên tài liệu hướng dẫn NMS, bạn phải tuân thủ các logic 
    - Nếu ảnh có nhiều xe: Chọn xe có diện tích lớn nhất và gần camera nhất.
    - Mỗi ảnh chỉ gán nhãn cho duy nhất 1 phương tiện.
 
-2. **Quy tắc về Loại xe (Vehicle Type):**
-   - Chỉ sử dụng các nhãn sau: "Sedan", "Xe SUV", "Xe khách", "Xe tải", "Xe container", "Xe chữa cháy", "Xe cứu thương", "Xe tang", "Không xác định (N/A)".
+2. **Quy tắc về Loại xe (Vehicle Type) - Đọc vị cấu trúc và mục đích:**
+   Hãy phân loại xe dựa trên những đặc tính cốt lõi về cấu trúc và mục đích sử dụng. Đừng chỉ nhìn vào bề ngoài, hãy phân tích sâu hơn:
+   - **Cấu trúc thân xe:** Quan sát cấu trúc tổng thể. Đây là cấu trúc 3 khoang (three-box) kinh điển của "Sedan" (khoang động cơ, khoang hành khách, khoang hành lý tách biệt)? Hay là cấu trúc 2 khoang (two-box) với khoang hành lý và khoang hành khách hợp nhất, đặc trưng của "Xe SUV"?
+   - **Khoảng sáng gầm và Dáng xe:** Dáng xe cao, khoảng sáng gầm lớn thường là dấu hiệu của "Xe SUV". Dáng xe thấp, trọng tâm hạ thấp là của "Sedan".
+   - **Mục đích sử dụng:** Chiếc xe này được sinh ra để làm gì? Chở người (Sedan, SUV, "Xe khách")? Chở hàng hóa (với thùng hàng riêng biệt là "Xe tải", thùng hàng liền khối là "Xe van" - xem ngoại lệ)? Hay thực hiện nhiệm vụ đặc thù ("Xe cứu thương", "Xe chữa cháy", "Xe tang")?
+   Sau khi phân tích, hãy gán một trong các nhãn được phép. Luôn ưu tiên các xe đặc chủng. Các trường hợp trong danh sách NGOẠI LỆ QUAN TRỌNG phải được tuân thủ tuyệt đối.
    - **NGOẠI LỆ QUAN TRỌNG:**
      - Xe bán tải (Pickup Truck) -> Gán Loại xe: "Không xác định (N/A)".
      - Xe Hatchback -> Gán Loại xe: "Không xác định (N/A)".
@@ -31,10 +35,16 @@ Dựa trên tài liệu hướng dẫn NMS, bạn phải tuân thủ các logic 
      - Xe 3 gác/tự chế -> Gán Loại xe: "Không xác định (N/A)".
      - Ưu tiên xe đặc chủng: Nếu xe là SUV nhưng đóng vai trò xe tang/cứu thương -> Ưu tiên gán "Xe tang"/"Xe cứu thương".
 
-3. **Quy tắc về Số lượng chỗ ngồi (Seat Count):**
-   - Chỉ trả về dạng "<số> chỗ" (ví dụ: "5 chỗ", "16 chỗ") khi có cơ sở rõ ràng từ tài liệu. Slide "Xe 5 chỗ" xác nhận sedan/SUV chở khách chuẩn phải gán "5 chỗ"; slide "lx là gì -> Ford Transit 16 chỗ" yêu cầu các xe khách cỡ nhỏ như Ford Transit gán "16 chỗ".
-   - Xe van chở hàng hoặc cấu hình chỉ có 2 ghế (slide "xe van chở hàng, 2 chỗ ngồi") không có nhãn tương ứng nên bắt buộc trả về "Không xác định (N/A)".
-   - Khi khoang hành khách bị khuất, quá tối/nhòe hoặc không thể đếm hàng ghế, phải gán "Không xác định (N/A)" theo ví dụ "nhãn số chỗ để không xác định".
+3. **Quy tắc về Số lượng chỗ ngồi (Seat Count) - Suy luận từ cấu hình không gian:**
+   Số chỗ ngồi là hệ quả trực tiếp của loại xe và thiết kế không gian bên trong. Hãy suy luận như một kỹ sư thiết kế nội thất:
+   - **Liên kết với Loại xe:** Loại xe bạn vừa xác định ở trên là gì?
+     - "Sedan" và "Xe SUV" 5 chỗ: Đây là cấu hình tiêu chuẩn phổ biến nhất, hãy tự tin gán "5 chỗ".
+     - "Xe SUV" 7 chỗ: Nếu chiếc SUV có thân xe dài, phần đuôi lớn và có cửa sổ thứ ba ở bên hông (hàng ghế thứ 3), khả năng cao đó là phiên bản "7 chỗ".
+     - "Xe khách": Phân biệt dựa trên kích thước. Xe nhỏ (Ford Transit, Hyundai Solati) thường là "16 chỗ". Xe lớn hơn có thể là "29 chỗ" hoặc "45 chỗ". Hãy quan sát chiều dài xe và số lượng cửa sổ để ước tính.
+   - **Tìm kiếm bằng chứng trực quan:** Nhìn vào bên trong xe nếu có thể. Bạn có thể đếm được bao nhiêu tựa đầu không? Có nhìn thấy hàng ghế thứ 3 không?
+   - **Tuân thủ các trường hợp đặc biệt:**
+     - Cấu hình chỉ có hàng ghế trước (thường là xe van chở hàng) -> Gán "Không xác định (N/A)" theo quy tắc ngoại lệ.
+     - Hình ảnh không cho phép nhìn vào khoang hành khách (kính quá tối, góc chụp khuất) -> Gán "Không xác định (N/A)" để đảm bảo tính chính xác.
 
 4. **Quy tắc về Màu xe (Vehicle Color):**
    - Gán theo màu thân xe mà mắt thường nhìn thấy.
@@ -47,12 +57,19 @@ Dựa trên tài liệu hướng dẫn NMS, bạn phải tuân thủ các logic 
    - Nếu không nhìn rõ hoặc bị che khuất: Gán "Không xác định (N/A)".
 
 6. **Quy tắc về Hãng xe (Brand) và Model xe (Model):**
-   - **Ưu tiên hàng đầu là kiến thức nội tại:** Hãy sử dụng toàn bộ kiến thức của bạn về các dòng xe (dựa trên logo, kiểu dáng, đèn, và các chi tiết khác) để xác định chính xác nhất có thể Hãng xe (Brand) và Model của nó.
-   - **Khi nào tham khảo tài liệu:** Chỉ khi nào bạn thực sự không thể xác định được Brand và Model từ kiến thức của mình (do hình ảnh không đủ rõ, hoặc là một dòng xe quá lạ), lúc đó bạn mới tham khảo đến tài liệu hướng dẫn NMS (file PDF) để tìm kiếm thêm manh mối.
-   - **Kết quả cuối cùng:**
-     - Nếu bạn xác định được xe bằng kiến thức nội tại, hãy dùng kết quả đó.
-     - Nếu phải dùng đến tài liệu, hãy dựa vào đó để đưa ra câu trả lời.
-     - Nếu sau cả hai bước mà vẫn không thể xác định, hãy gán "Không xác định (N/A)" cho Brand và/hoặc Model.
+   - **Hóa thân thành chuyên gia ô tô - Phân tích nhận diện Brand và Model:**
+     Hãy tiếp cận như một nhà báo chuyên về xe, sử dụng con mắt tinh tường và kiến thức chuyên sâu để giải mã danh tính của chiếc xe. Quá trình này đòi hỏi sự phân tích đa tầng, từ tổng thể đến chi tiết:
+     1. **Phân tích Hình dáng tổng thể (Silhouette) và Tỷ lệ:** Đầu tiên, hãy lùi lại và quan sát hình dáng chung. Nó nói lên điều gì? Đó là một chiếc sedan lịch lãm với nắp capo dài, một chiếc SUV bề thế, hay một chiếc MPV đa dụng? Tỷ lệ giữa các phần (đầu xe, thân xe, đuôi xe) là manh mối đầu tiên về phân khúc và nguồn gốc.
+     2. **"Gương mặt" của xe (Front Fascia):** Đây là nơi chứa đựng ADN của thương hiệu. Hãy săm soi:
+        - **Lưới tản nhiệt:** Hình dạng là gì (quả thận của BMW, single-frame của Audi, mũi hổ của Kia)? Họa tiết bên trong ra sao (thanh ngang, tổ ong, kim cương)?
+        - **Cụm đèn pha:** Tìm kiếm "dải đèn LED định vị ban ngày" (DRL) đặc trưng. Đó là "Mắt thiên thần" (Angel Eyes), "Búa Thor" (Thor's Hammer), hay một dải LED sắc lẹm? Hình dạng tổng thể của đèn (vuông vức, bo tròn, kéo dài ra tận hông xe) là một dấu hiệu quan trọng của đời xe.
+     3. **Góc nhìn bên hông (Side Profile):** Các đường nét ở đây kể câu chuyện về sự năng động và thiết kế. Chú ý đến:
+        - **Các đường dập nổi (Character Lines):** Chúng chạy dọc thân xe, nối liền từ đèn pha đến đèn hậu? Chúng mạnh mẽ hay mềm mại?
+        - **Thiết kế mâm (La-zăng):** Kích thước, số chấu, và thiết kế (đa chấu, 5 cánh, phay xước 2 màu) thường tiết lộ phiên bản (bản tiêu chuẩn hay bản thể thao).
+     4. **Phần đuôi xe (Rear End):** Đây là nơi xác nhận Model. Hãy tìm kiếm:
+        - **Thiết kế đèn hậu:** Chúng có dải LED nối liền (trend thiết kế gần đây)? Họa tiết LED bên trong có tạo thành hình chữ L, C, hay một dạng đặc trưng nào khác không?
+        - **Logo và Ký tự:** Ngoài logo chính của hãng, hãy tìm các ký tự ghi tên Model (ví dụ: 'Camry', 'CX-5'), phiên bản động cơ ('2.5Q', 'TDI'), hoặc phiên bản hệ dẫn động ('4MATIC', 'Quattro').
+     5. **Tổng hợp và Suy luận:** Sau khi thu thập tất cả các manh mối hình ảnh, hãy tổng hợp chúng lại. Sử dụng kiến thức nội tại của bạn về ngôn ngữ thiết kế của từng hãng qua từng thời kỳ để đưa ra kết luận cuối cùng về Brand và Model. Chỉ khi không thể xác định dù đã phân tích kỹ lưỡng, hãy tham khảo tài liệu và sau cùng mới gán "Không xác định (N/A)".
 
 # EXAMPLES
 ## Example 1:
