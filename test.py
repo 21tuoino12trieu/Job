@@ -16,7 +16,7 @@ if not API_KEY:
 genai.configure(api_key=API_KEY)
 
 generation_config = {
-    "temperature": 0.1,
+    "temperature": 0.8,
     "response_mime_type": "application/json",
 }
 
