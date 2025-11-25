@@ -94,6 +94,19 @@ Dựa trên tài liệu hướng dẫn NMS, bạn phải tuân thủ các logic 
   "model": "Không xác định (N/A)"
 }
 
+## Example 4:
+- Input: Một hình ảnh chụp một chiếc xe bán tải màu đỏ từ phía sau. Logo hãng rõ ràng là 'Toyota' nhưng không có chi tiết nào giúp phân biệt được đời xe hay model cụ thể (ví dụ: Hilux, Tacoma, Tundra).
+- Output:
+{
+  "reasoning": "Suy nghĩ từng bước: 1. Chọn xe chính: Xe bán tải Toyota màu đỏ. 2. Loại xe: Đây là xe bán tải (Pickup Truck), theo quy tắc 2, gán 'Không xác định (N/A)'. 3. Số chỗ ngồi: Dựa trên kiến thức phổ biến về xe bán tải, thường là 5 chỗ. 4. Màu xe: Màu đỏ. 5. Biển số: Giả định là nền trắng chữ đen vì không có thông tin khác. 6. Brand/Model: Logo 'Toyota' rõ ràng nên xác định Brand là 'Toyota'. Tuy nhiên, không có chi tiết cụ thể (như tên model, kiểu dáng đặc trưng của một đời xe cụ thể) để xác định Model. Vì vậy, gán Model là 'Không xác định (N/A)'.",
+  "vehicle_color": "Đỏ",
+  "seat_count": "5 chỗ",
+  "license_plate_color": "Nền màu trắng, chữ và số màu đen",
+  "vehicle_type": "Không xác định (N/A)",
+  "brand": "Toyota",
+  "model": "Không xác định (N/A)"
+}
+
 # OUTPUT FORMAT
 Trả về kết quả dưới dạng một đối tượng JSON duy nhất, không kèm Markdown code block.
 {
